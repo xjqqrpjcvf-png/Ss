@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Do You Love Me?</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: Arial, sans-serif;
+      margin-top: 100px;
+    }
+    #question {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    button {
+      font-size: 16px;
+      padding: 10px 20px;
+      margin: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    #yes {
+      background-color: lightgreen;
+    }
+    #no {
+      background-color: lightcoral;
+    }
+  </style>
+</head>
+<body>
+  <div id="question">Do you love me?</div>
+  <button id="yes">Yes</button>
+  <button id="no">No</button>
+
+  <script>
+    const yesButton = document.getElementById('yes');
+    const noButton = document.getElementById('no');
+    const questionDiv = document.getElementById('question');
+
+    noButton.addEventListener('click', () => {
+      // Increase "Yes" button size
+      const currentSize = parseFloat(window.getComputedStyle(yesButton).fontSize);
+      yesButton.style.fontSize = (currentSize + 2) + 'px';
+    });
+
+    yesButton.addEventListener('click', () => {
+      // Change the text to "I'm sorry for everything. I love you so much."
+      questionDiv.innerHTML = "I'm sorry for everything. I love you so much.";
+      yesButton.style.display = 'none';
+      noButton.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
