@@ -5,41 +5,63 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Do You Love Me?</title>
   <style>
-    body {
-      background-color: pink; /* Pink background */
-      text-align: center;
-      font-family: 'Arial', sans-serif;
-      color: #333;
+    /* Global styles */
+    body, html {
       margin: 0;
-      padding: 20px;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background-color: pink; /* Permanent pink background */
+      font-family: 'Arial', sans-serif;
+      overflow: hidden; /* Prevent scrolling during animation */
+    }
+
+    /* Container for all pages */
+    .page-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+    }
+
+    /* Page styles */
+    .page {
+      position: absolute;
+      width: 100%;
+      height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
       flex-direction: column;
-      height: 100vh;
+      background: pink;
+      backface-visibility: hidden;
+      transform-origin: right center; /* Flip from right edge */
     }
 
-    #question, #options, #final-message, #meme {
-      display: none; /* Hidden until triggered */
+    .page.hidden {
+      display: none;
     }
 
-    #initial-button {
+    .page.flip-out {
+      animation: flipOut 0.7s forwards; /* Disappears like flipping a page */
+    }
+
+    .page.flip-in {
+      animation: flipIn 0.7s forwards; /* Appears like flipping a page */
+    }
+
+    /* Buttons */
+    button {
       font-size: 24px;
       padding: 10px 20px;
       background-color: white;
-      color: #333;
       border: 2px solid #333;
       border-radius: 10px;
       cursor: pointer;
+      transition: transform 0.2s ease;
     }
 
-    #options button {
-      font-size: 16px;
-      padding: 10px 20px;
-      margin: 10px;
-      cursor: pointer;
-      border: none;
-      border-radius: 5px;
+    button:hover {
+      transform: scale(1.1); /* Enlarge button slightly */
     }
 
     #yes {
@@ -50,8 +72,8 @@
       background-color: lightcoral;
     }
 
-    #final-message {
-      font-size: 36px; /* Big and decorated text */
+    .final-message {
+      font-size: 36px;
       font-weight: bold;
       color: darkred;
       background: white;
@@ -64,55 +86,103 @@
 
     img {
       width: 150px;
-      margin-top: 20px;
+      margin-top: 20px; /* Love-themed meme/sticker */
+    }
+
+    /* Page flip animations */
+    @keyframes flipOut {
+      0% {
+        transform: rotateY(0deg);
+      }
+      100% {
+        transform: rotateY(-180deg);
+        opacity: 0;
+      }
+    }
+
+    @keyframes flipIn {
+      0% {
+        transform: rotateY(180deg);
+        opacity: 0;
+      }
+      100% {
+        transform: rotateY(0deg);
+        opacity: 1;
+      }
     }
   </style>
 </head>
 <body>
-  <button id="initial-button">Hi beautiful Parisienne</button>
+  <div class="page-container">
+    <!-- Page 1: Hi Beautiful -->
+    <div id="page1" class="page active">
+      <button id="startButton">Hi beautiful Parisienne</button>
+    </div>
 
-  <div id="question">Do you love me?</div>
-  
-  <div id="options">
-    <button id="yes">Yes</button>
-    <button id="no">No</button>
+    <!-- Page 2: Do You Love Me? -->
+    <div id="page2" class="page hidden">
+      <div id="question">Do you love me?</div>
+      <div id="options">
+        <button id="yes">Yes</button>
+        <button id="no">No</button>
+      </div>
+      <img id="meme" src="https://i.imgur.com/QpS7bYk.png" alt="Love Meme" />
+    </div>
+
+    <!-- Page 3: Final Message -->
+    <div id="page3" class="page hidden">
+      <div class="final-message">
+        I love you so much, please Smhni ❤️✨💐
+      </div>
+    </div>
   </div>
-  
-  <!-- Meme/Sticker added -->
-  <img id="meme" src="https://i.imgur.com/QpS7bYk.png" alt="Love Meme" />
-
-  <div id="final-message">I love you so much, please Smhni ❤️✨💐</div>
 
   <script>
-    const initialButton = document.getElementById('initial-button');
-    const question = document.getElementById('question');
-    const options = document.getElementById('options');
+    // Get references to elements
+    const page1 = document.getElementById('page1');
+    const page2 = document.getElementById('page2');
+    const page3 = document.getElementById('page3');
+
+    const startButton = document.getElementById('startButton');
     const yesButton = document.getElementById('yes');
     const noButton = document.getElementById('no');
-    const finalMessage = document.getElementById('final-message');
-    const meme = document.getElementById('meme');
 
-    // Step 1: Show "Do you love me?" after clicking "Hi beautiful Parisienne"
-    initialButton.addEventListener('click', () => {
-      initialButton.style.display = 'none'; // Hide the first button
-      question.style.display = 'block'; // Display question
-      options.style.display = 'block'; // Display buttons
-      meme.style.display = 'block'; // Display the meme/sticker
+    // Utility function to flip between pages
+    function goToPage(fromPage, toPage) {
+      // Start flip-out animation for the current page
+      fromPage.classList.add('flip-out');
+      
+      // Once animation ends, hide the old page and show the new page
+      fromPage.addEventListener('animationend', () => {
+        fromPage.classList.add('hidden'); // Hide old page
+        fromPage.classList.remove('flip-out'); // Reset animation class
+
+        // Show the new page with flip-in animation
+        toPage.classList.remove('hidden');
+        toPage.classList.add('flip-in');
+        toPage.addEventListener('animationend', () => {
+          toPage.classList.remove('flip-in'); // Reset animation class
+        });
+      });
+    }
+
+    // Step 1: Transition from Page 1 to Page 2
+    startButton.addEventListener('click', () => {
+      goToPage(page1, page2);
     });
 
-    // Step 2: Handle "No" button click (makes "Yes" button grow bigger)
+    // Step 2: Handle "No" Button (Makes "Yes" Button Bigger)
     noButton.addEventListener('click', () => {
       const currentSize = parseFloat(window.getComputedStyle(yesButton).fontSize);
       yesButton.style.fontSize = (currentSize + 2) + 'px';
     });
 
-    // Step 3: Handle "Yes" button click (shows the final message)
+    // Step 3: Transition from Page 2 to Page 3
     yesButton.addEventListener('click', () => {
-      question.style.display = 'none';
-      options.style.display = 'none';
-      meme.style.display = 'none';
-      finalMessage.style.display = 'block'; // Show final decorated phrase
+      goToPage(page2, page3);
     });
   </script>
 </body>
 </html>
+
+   
